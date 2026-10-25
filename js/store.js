@@ -101,12 +101,19 @@
     return txs.sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt);
   }
 
-  function createInitialState(withDemo = true) {
+  function createInitialState(withDemo = false) {
+    const wallets = JSON.parse(JSON.stringify(CONFIG.defaultWallets));
+    if (withDemo) {
+      const demoInit = { w_cash: 15000000, w_bank: 20000000, w_ewallet: 22000000 };
+      wallets.forEach((w) => {
+        if (demoInit[w.id] !== undefined) w.initialBalance = demoInit[w.id];
+      });
+    }
     return {
       version: 1,
       isDemoData: withDemo,
       settings: JSON.parse(JSON.stringify(CONFIG.defaultSettings)),
-      wallets: JSON.parse(JSON.stringify(CONFIG.defaultWallets)),
+      wallets,
       categories: JSON.parse(JSON.stringify(CONFIG.defaultCategories)),
       transactions: withDemo ? generateDemoTransactions() : []
     };
@@ -122,7 +129,7 @@
       try {
         const raw = localStorage.getItem(CONFIG.storageKey);
         if (!raw) {
-          const initial = createInitialState(true);
+          const initial = createInitialState(false);
           this.persistRaw(initial);
           return initial;
         }
@@ -141,7 +148,7 @@
         };
       } catch (err) {
         console.warn('Không thể đọc dữ liệu cũ, khởi tạo mặc định:', err);
-        return createInitialState(true);
+        return createInitialState(false);
       }
     }
 

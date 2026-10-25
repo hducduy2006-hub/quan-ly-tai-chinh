@@ -965,11 +965,6 @@
       showToast(next === 'dark' ? '🌙 Đã bật chế độ Tối' : '☀️ Đã bật chế độ Sáng');
     });
 
-    // Nút mở Hướng dẫn GitHub
-    const openGuide = () => document.getElementById('modalGithubGuide').showModal();
-    document.getElementById('btnOpenGithubGuide').addEventListener('click', openGuide);
-    document.getElementById('btnOpenGithubGuide2').addEventListener('click', openGuide);
-
     // Banner dữ liệu mẫu
     document.getElementById('btnStartFreshBanner').addEventListener('click', () => {
       if (confirm('Xóa toàn bộ giao dịch mẫu và đặt số dư ban đầu của các ví về 0 để bạn bắt đầu ghi chép thật?')) {

@@ -47,9 +47,9 @@ window.APP_CONFIG = {
 
   // Danh sách Ví / Tài khoản mặc định
   defaultWallets: [
-    { id: 'w_cash', name: 'Tiền mặt', type: 'cash', icon: '👛', color: '#10b981', initialBalance: 2500000 },
-    { id: 'w_bank', name: 'Tài khoản Ngân hàng', type: 'bank', icon: '🏦', color: '#3b82f6', initialBalance: 18000000 },
-    { id: 'w_ewallet', name: 'Ví điện tử (MoMo/ZaloPay)', type: 'ewallet', icon: '📱', color: '#ec4899', initialBalance: 1500000 }
+    { id: 'w_cash', name: 'Tiền mặt', type: 'cash', icon: '👛', color: '#10b981', initialBalance: 0 },
+    { id: 'w_bank', name: 'Tài khoản Ngân hàng', type: 'bank', icon: '🏦', color: '#3b82f6', initialBalance: 0 },
+    { id: 'w_ewallet', name: 'Ví điện tử (MoMo/ZaloPay)', type: 'ewallet', icon: '📱', color: '#ec4899', initialBalance: 0 }
   ],
 
   // Danh mục Thu / Chi mặc định (kèm hạn mức ngân sách tháng mẫu)

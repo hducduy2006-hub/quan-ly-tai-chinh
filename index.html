@@ -47,9 +47,6 @@
       </nav>
 
       <div class="sidebar-footer">
-        <button type="button" id="btnOpenGithubGuide" class="btn btn-outline btn-full">
-          🚀 Cách đưa lên GitHub
-        </button>
         <div class="sidebar-meta">
           <button type="button" id="btnQuickTheme" class="icon-pill" title="Đổi giao diện Sáng / Tối">
             🌙 Chế độ tối
@@ -423,25 +420,13 @@
                   <h3>🔄 Dữ liệu mẫu &amp; Đặt lại</h3>
                 </div>
                 <p class="muted-text">
-                  Bạn có thể nạp lại dữ liệu mẫu để thử nghiệm biểu đồ hoặc xóa sạch giao dịch để bắt đầu ghi chép thực tế.
+                  Bạn có thể nạp thử dữ liệu mẫu để xem biểu đồ minh họa hoặc xóa sạch giao dịch để bắt đầu sổ mới.
                 </p>
                 <div class="reset-actions">
                   <button type="button" id="btnLoadDemo" class="btn btn-ghost">✨ Nạp dữ liệu mẫu</button>
                   <button type="button" id="btnClearTransactions" class="btn btn-danger-outline">🗑️ Xóa sạch giao dịch (Bắt đầu mới)</button>
                   <button type="button" id="btnFactoryReset" class="btn btn-ghost text-expense">Khôi phục gốc ban đầu</button>
                 </div>
-              </article>
-
-              <article class="card github-promo-card">
-                <div class="card-head">
-                  <h3>🌐 Sẵn sàng Public lên GitHub Pages</h3>
-                </div>
-                <p class="muted-text">
-                  Ứng dụng được thiết kế chuẩn Web Tĩnh (Pure HTML/CSS/JS) kèm file <code>.nojekyll</code> và <code>js/config.js</code> rõ ràng. Bạn có thể kéo-thả lên GitHub và nhận ngay đường link web miễn phí!
-                </p>
-                <button type="button" id="btnOpenGithubGuide2" class="btn btn-primary">
-                  Xem hướng dẫn từng bước đưa lên GitHub →
-                </button>
               </article>
             </div>
           </div>
@@ -626,44 +611,6 @@
         <button type="submit" class="btn btn-primary">Lưu danh mục</button>
       </div>
     </form>
-  </dialog>
-
-  <!-- =======================================================================
-       MODAL 4: HƯỚNG DẪN ĐƯA LÊN GITHUB & CHỈNH SỬA MÃ NGUỒN
-       ======================================================================= -->
-  <dialog id="modalGithubGuide" class="app-dialog dialog-wide">
-    <div class="dialog-box">
-      <div class="dialog-header">
-        <h3>🚀 Hướng dẫn Chỉnh sửa &amp; Public lên GitHub Pages</h3>
-        <button type="button" class="btn-close" data-close-dialog="modalGithubGuide" aria-label="Đóng">✕</button>
-      </div>
-
-      <div class="dialog-body guide-content">
-        <div class="guide-step">
-          <h4>Cách 1: Kéo-thả trực tiếp trên Web GitHub (Nhanh nhất — Không cần cài Git)</h4>
-          <ol>
-            <li>Đăng nhập vào <a href="https://github.com/new" target="_blank" rel="noopener noreferrer">github.com/new</a> để tạo Repository mới (ví dụ đặt tên: <code>quan-ly-tai-chinh</code>, chọn chế độ <strong>Public</strong>, rồi bấm <strong>Create repository</strong>).</li>
-            <li>Ở trang vừa tạo, nhấn vào dòng chữ <strong>uploading an existing file</strong>.</li>
-            <li>Mở thư mục dự án trên máy tính, kéo toàn bộ các file và thư mục bên trong (gồm <code>index.html</code>, <code>README.md</code>, <code>.nojekyll</code>, thư mục <code>css</code> và <code>js</code>) thả vào khung trình duyệt.</li>
-            <li>Nhấn nút xanh <strong>Commit changes</strong> ở cuối trang.</li>
-            <li>Vào mục <strong>Settings</strong> (Cài đặt của Repo) → chọn <strong>Pages</strong> ở menu bên trái → tại mục <em>Branch</em> chọn <strong>main</strong> (và <code>/(root)</code>) → bấm <strong>Save</strong>.</li>
-            <li>Đợi khoảng 1 phút, GitHub sẽ cấp cho bạn địa chỉ web công khai dạng: <code>https://&lt;ten-tai-khoan&gt;.github.io/quan-ly-tai-chinh/</code>!</li>
-          </ol>
-        </div>
-
-        <div class="guide-step">
-          <h4>Cách 2: Tự chỉnh sửa code cực dễ ngay trên GitHub hoặc máy tính</h4>
-          <ul>
-            <li><strong>Chỉnh cấu hình mặc định:</strong> Mở file <code>js/config.js</code> (có thể bấm biểu tượng cây bút ✏️ ngay trên web GitHub) để sửa tên app mặc định, danh mục mặc định, đơn vị tiền tệ hoặc màu sắc.</li>
-            <li><strong>Chỉnh giao diện &amp; bố cục:</strong> Sửa trong <code>css/styles.css</code> (đã chia sẵn các biến màu CSS rõ ràng ở đầu file) và <code>index.html</code>.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="dialog-footer">
-        <button type="button" class="btn btn-primary" data-close-dialog="modalGithubGuide">Đã hiểu</button>
-      </div>
-    </div>
   </dialog>
 
   <!-- Vùng hiển thị thông báo nhanh (Toast) -->
