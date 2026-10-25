@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Ứng dụng quản lý tài chính cá nhân thông minh — Dễ dàng tùy chỉnh và triển khai miễn phí trên GitHub Pages." />
+  <title>FinFlow — Quản lý tài chính cá nhân</title>
+  <!-- Favicon SVG nội tuyến để không cần file ảnh rời -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%234f46e5'/%3E%3Cpath d='M18 42V26l10 8 10-12 8 8' stroke='%23fff' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='46' cy='30' r='4' fill='%2334d399'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- =====================================================================
+         THANH ĐIỀU HƯỚNG BÊN TRÁI (SIDEBAR DESKTOP / BOTTOM NAV MOBILE)
+         ===================================================================== -->
+    <aside class="sidebar" aria-label="Điều hướng chính">
+      <div class="brand-header">
+        <div class="brand-logo" aria-hidden="true">💎</div>
+        <div class="brand-text">
+          <h1 id="brandAppName">FinFlow</h1>
+          <p id="brandAppSubtitle">Quản lý tài chính cá nhân</p>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button type="button" class="nav-item is-active" data-tab="dashboard">
+          <span class="nav-icon" aria-hidden="true">📊</span>
+          <span class="nav-label">Tổng quan</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="transactions">
+          <span class="nav-icon" aria-hidden="true">🧾</span>
+          <span class="nav-label">Giao dịch</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="wallets">
+          <span class="nav-icon" aria-hidden="true">👛</span>
+          <span class="nav-label">Ví &amp; Danh mục</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="budgets">
+          <span class="nav-icon" aria-hidden="true">🎯</span>
+          <span class="nav-label">Ngân sách</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="settings">
+          <span class="nav-icon" aria-hidden="true">⚙️</span>
+          <span class="nav-label">Tùy chỉnh</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button type="button" id="btnOpenGithubGuide" class="btn btn-outline btn-full">
+          🚀 Cách đưa lên GitHub
+        </button>
+        <div class="sidebar-meta">
+          <button type="button" id="btnQuickTheme" class="icon-pill" title="Đổi giao diện Sáng / Tối">
+            🌙 Chế độ tối
+          </button>
+          <span class="privacy-badge" title="Dữ liệu lưu 100% trên trình duyệt của bạn">🔒 Riêng tư</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- =====================================================================
+         KHU VỰC NỘI DUNG CHÍNH
+         ===================================================================== -->
+    <div class="main-area">
+      <!-- Thanh công cụ phía trên -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h2 id="currentViewTitle">Tổng quan tài chính</h2>
+        </div>
+
+        <div class="topbar-controls">
+          <div class="period-picker" id="periodPickerGroup">
+            <button type="button" id="btnPrevMonth" class="btn-icon" title="Tháng trước" aria-label="Tháng trước">◀</button>
+            <input type="month" id="periodMonthInput" aria-label="Chọn tháng xem báo cáo" />
+            <button type="button" id="btnNextMonth" class="btn-icon" title="Tháng sau" aria-label="Tháng sau">▶</button>
+            <button type="button" id="btnAllTimeToggle" class="btn btn-ghost btn-sm" title="Xem toàn bộ thời gian">
+              Tất cả
+            </button>
+          </div>
+
+          <button type="button" id="btnAddTransactionTop" class="btn btn-primary">
+            <span>＋</span> Thêm giao dịch
+          </button>
+        </div>
+      </header>
+
+      <!-- Thông báo dữ liệu mẫu lần đầu -->
+      <div id="demoBanner" class="demo-banner" hidden>
+        <div class="demo-banner-text">
+          <span>💡</span>
+          <div>
+            <strong>Đang hiển thị dữ liệu mẫu</strong> để bạn xem trước biểu đồ, ngân sách và báo cáo.
+            Khi sẵn sàng dùng thật, bạn có thể xóa mẫu chỉ với 1 cú nhấp!
+          </div>
+        </div>
+        <div class="demo-banner-actions">
+          <button type="button" id="btnStartFreshBanner" class="btn btn-sm btn-primary">
+            Xóa mẫu &amp; Bắt đầu sổ mới
+          </button>
+          <button type="button" id="btnDismissBanner" class="btn btn-sm btn-ghost">
+            Ẩn thông báo
+          </button>
+        </div>
+      </div>
+
+      <main class="content-container">
+        <!-- =================================================================
+             TAB 1: TỔNG QUAN (DASHBOARD)
+             ================================================================= -->
+        <section id="view-dashboard" class="tab-view is-active" aria-labelledby="currentViewTitle">
+          <!-- 4 Thẻ chỉ số chính -->
+          <div class="kpi-grid">
+            <article class="kpi-card kpi-networth">
+              <div class="kpi-header">
+                <span class="kpi-title">Tổng tài sản hiện có</span>
+                <span class="kpi-badge" aria-hidden="true">🏦</span>
+              </div>
+              <div class="kpi-value" id="kpiNetWorth">0 ₫</div>
+              <div class="kpi-sub" id="kpiWalletCount">Tổng số dư các ví</div>
+            </article>
+
+            <article class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Thu nhập trong kỳ</span>
+                <span class="kpi-badge badge-income" aria-hidden="true">↗</span>
+              </div>
+              <div class="kpi-value text-income" id="kpiIncome">0 ₫</div>
+              <div class="kpi-sub" id="kpiIncomeSub">Trong kỳ đang chọn</div>
+            </article>
+
+            <article class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Chi tiêu trong kỳ</span>
+                <span class="kpi-badge badge-expense" aria-hidden="true">↘</span>
+              </div>
+              <div class="kpi-value text-expense" id="kpiExpense">0 ₫</div>
+              <div class="kpi-sub" id="kpiExpenseSub">Trong kỳ đang chọn</div>
+            </article>
+
+            <article class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Chênh lệch (Tiết kiệm)</span>
+                <span class="kpi-badge badge-neutral" aria-hidden="true">⚖️</span>
+              </div>
+              <div class="kpi-value" id="kpiNetBalance">0 ₫</div>
+              <div class="kpi-sub" id="kpiSavingsRate">Tỷ lệ tiết kiệm: 0%</div>
+            </article>
+          </div>
+
+          <!-- Dải thẻ Ví tiền nhanh -->
+          <div class="section-block">
+            <div class="section-head">
+              <h3>Danh sách Ví &amp; Tài khoản</h3>
+              <div class="section-actions">
+                <button type="button" class="btn btn-ghost btn-sm" data-goto-tab="wallets">Quản lý ví →</button>
+              </div>
+            </div>
+            <div id="dashboardWalletsGrid" class="wallets-strip"></div>
+          </div>
+
+          <!-- Hàng biểu đồ -->
+          <div class="two-col-grid">
+            <article class="card">
+              <div class="card-head">
+                <h3>Cơ cấu theo danh mục</h3>
+                <div class="segmented-control" id="donutTypeSwitch">
+                  <button type="button" class="seg-btn is-active" data-donut-type="expense">Chi tiêu</button>
+                  <button type="button" class="seg-btn" data-donut-type="income">Thu nhập</button>
+                </div>
+              </div>
+              <div id="dashboardDonutChart" class="chart-box"></div>
+            </article>
+
+            <article class="card">
+              <div class="card-head">
+                <h3>Xu hướng Thu - Chi 6 tháng</h3>
+                <span class="muted-text small-note">So sánh qua các tháng</span>
+              </div>
+              <div id="dashboardTrendChart" class="chart-box"></div>
+            </article>
+          </div>
+
+          <!-- Hàng Ngân sách & Giao dịch gần đây -->
+          <div class="two-col-grid">
+            <article class="card">
+              <div class="card-head">
+                <h3>Cảnh báo hạn mức ngân sách</h3>
+                <button type="button" class="btn btn-ghost btn-sm" data-goto-tab="budgets">Chi tiết →</button>
+              </div>
+              <div id="dashboardBudgetList" class="stack-list"></div>
+            </article>
+
+            <article class="card">
+              <div class="card-head">
+                <h3>Giao dịch gần đây</h3>
+                <button type="button" class="btn btn-ghost btn-sm" data-goto-tab="transactions">Xem tất cả →</button>
+              </div>
+              <div id="dashboardRecentTx" class="stack-list"></div>
+            </article>
+          </div>
+        </section>
+
+        <!-- =================================================================
+             TAB 2: SỔ GIAO DỊCH (TRANSACTIONS)
+             ================================================================= -->
+        <section id="view-transactions" class="tab-view" hidden>
+          <div class="card filter-card">
+            <div class="filter-grid">
+              <div class="form-field filter-search">
+                <label for="txSearchInput">Tìm kiếm</label>
+                <input type="search" id="txSearchInput" placeholder="Ghi chú, danh mục, số tiền..." />
+              </div>
+
+              <div class="form-field">
+                <label for="txTypeFilter">Loại giao dịch</label>
+                <select id="txTypeFilter">
+                  <option value="all">Tất cả loại</option>
+                  <option value="expense">Chi tiêu</option>
+                  <option value="income">Thu nhập</option>
+                  <option value="transfer">Chuyển ví</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="txWalletFilter">Ví / Tài khoản</label>
+                <select id="txWalletFilter">
+                  <option value="all">Tất cả ví</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="txCategoryFilter">Danh mục</label>
+                <select id="txCategoryFilter">
+                  <option value="all">Tất cả danh mục</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label for="txSortSelect">Sắp xếp</label>
+                <select id="txSortSelect">
+                  <option value="date_desc">Mới nhất trước</option>
+                  <option value="date_asc">Cũ nhất trước</option>
+                  <option value="amount_desc">Số tiền giảm dần</option>
+                  <option value="amount_asc">Số tiền tăng dần</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="filter-footer">
+              <div id="txFilteredSummary" class="filtered-summary"></div>
+              <div class="filter-buttons">
+                <button type="button" id="btnResetTxFilters" class="btn btn-ghost btn-sm">Đặt lại bộ lọc</button>
+                <button type="button" id="btnQuickExportCsv" class="btn btn-outline btn-sm">📥 Xuất Excel (CSV)</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card table-card">
+            <div class="table-responsive">
+              <table class="tx-table">
+                <thead>
+                  <tr>
+                    <th>Ngày</th>
+                    <th>Danh mục &amp; Ghi chú</th>
+                    <th>Ví / Tài khoản</th>
+                    <th class="text-right">Số tiền</th>
+                    <th class="text-right">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="txTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =================================================================
+             TAB 3: QUẢN LÝ VÍ & DANH MỤC (WALLETS & CATEGORIES)
+             ================================================================= -->
+        <section id="view-wallets" class="tab-view" hidden>
+          <div class="section-block">
+            <div class="section-head">
+              <div>
+                <h3>Ví &amp; Tài khoản của bạn</h3>
+                <p class="muted-text">Tự do thêm mới, đổi tên, chỉnh số dư ban đầu hoặc chuyển tiền nội bộ giữa các ví.</p>
+              </div>
+              <div class="section-actions">
+                <button type="button" id="btnQuickTransfer" class="btn btn-outline">⇄ Chuyển tiền giữa ví</button>
+                <button type="button" id="btnAddWallet" class="btn btn-primary">＋ Thêm ví mới</button>
+              </div>
+            </div>
+            <div id="walletsManageGrid" class="manage-cards-grid"></div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-head">
+              <div>
+                <h3>Danh mục Thu &amp; Chi tùy chỉnh</h3>
+                <p class="muted-text">Chỉnh sửa biểu tượng, màu sắc, hạn mức hoặc tạo thêm danh mục riêng phù hợp với bạn.</p>
+              </div>
+              <div class="section-actions">
+                <div class="segmented-control" id="catManageTypeSwitch">
+                  <button type="button" class="seg-btn is-active" data-cat-type="expense">Chi tiêu</button>
+                  <button type="button" class="seg-btn" data-cat-type="income">Thu nhập</button>
+                </div>
+                <button type="button" id="btnAddCategory" class="btn btn-primary">＋ Thêm danh mục</button>
+              </div>
+            </div>
+            <div id="categoriesManageGrid" class="categories-grid"></div>
+          </div>
+        </section>
+
+        <!-- =================================================================
+             TAB 4: NGÂN SÁCH & PHÂN TÍCH (BUDGETS & ANALYTICS)
+             ================================================================= -->
+        <section id="view-budgets" class="tab-view" hidden>
+          <div id="overallBudgetCard" class="card highlight-budget-card"></div>
+
+          <article class="card">
+            <div class="card-head">
+              <h3>Nhịp độ chi tiêu từng ngày trong tháng</h3>
+              <span class="muted-text small-note">Đường nét đứt thể hiện mức trung bình ngày</span>
+            </div>
+            <div id="analyticsDailyChart" class="chart-box"></div>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <h3>Hạn mức ngân sách theo từng danh mục</h3>
+                <p class="muted-text small-note">Nhấn vào "Đặt hạn mức" ở bất kỳ danh mục nào để điều chỉnh ngân sách tháng.</p>
+              </div>
+            </div>
+            <div id="budgetCategoriesList" class="budget-detail-list"></div>
+          </article>
+        </section>
+
+        <!-- =================================================================
+             TAB 5: TÙY CHỈNH GIAO DIỆN & DỮ LIỆU (SETTINGS & BACKUP)
+             ================================================================= -->
+        <section id="view-settings" class="tab-view" hidden>
+          <div class="two-col-grid">
+            <!-- Tùy chỉnh giao diện trực tiếp -->
+            <article class="card">
+              <div class="card-head">
+                <h3>🎨 Tùy chỉnh ứng dụng trực tiếp</h3>
+              </div>
+              <form id="settingsForm" class="stack-form">
+                <div class="form-field">
+                  <label for="settingAppName">Tên ứng dụng (hiển thị góc trái &amp; tiêu đề tab)</label>
+                  <input type="text" id="settingAppName" maxlength="40" placeholder="VD: Sổ Thu Chi Gia Đình" required />
+                </div>
+
+                <div class="form-field">
+                  <label for="settingAppSubtitle">Dòng mô tả phụ</label>
+                  <input type="text" id="settingAppSubtitle" maxlength="60" placeholder="VD: Kế hoạch tự do tài chính" />
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-field">
+                    <label for="settingCurrency">Đơn vị tiền tệ</label>
+                    <select id="settingCurrency"></select>
+                  </div>
+
+                  <div class="form-field">
+                    <label for="settingOverallBudget">Tổng hạn mức chi tiêu / tháng</label>
+                    <input type="number" id="settingOverallBudget" min="0" step="any" placeholder="0 = Không giới hạn" />
+                  </div>
+                </div>
+
+                <div class="form-field">
+                  <label>Chế độ hiển thị (Sáng / Tối)</label>
+                  <div class="segmented-control" id="settingThemeGroup">
+                    <button type="button" class="seg-btn" data-theme-val="light">☀️ Sáng</button>
+                    <button type="button" class="seg-btn" data-theme-val="dark">🌙 Tối</button>
+                    <button type="button" class="seg-btn" data-theme-val="system">💻 Tự động</button>
+                  </div>
+                </div>
+
+                <div class="form-field">
+                  <label>Màu chủ đạo (Accent Color)</label>
+                  <div id="settingAccentGroup" class="color-swatch-row"></div>
+                </div>
+
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary">💾 Lưu tùy chỉnh</button>
+                </div>
+              </form>
+            </article>
+
+            <!-- Sao lưu & Xuất Nhập File -->
+            <div class="stack-cards">
+              <article class="card">
+                <div class="card-head">
+                  <h3>📦 Sao lưu &amp; Xuất / Nhập dữ liệu</h3>
+                </div>
+                <p class="muted-text">
+                  Dữ liệu được lưu riêng tư ngay trên trình duyệt của bạn. Hãy định kỳ xuất file sao lưu để giữ an toàn tuyệt đối hoặc chuyển sang máy tính/điện thoại khác.
+                </p>
+
+                <div class="backup-actions-grid">
+                  <button type="button" id="btnExportJSON" class="btn btn-outline">
+                    ⬇️ Sao lưu toàn bộ (.json)
+                  </button>
+                  <button type="button" id="btnExportCSV" class="btn btn-outline">
+                    📊 Xuất bảng Excel (.csv)
+                  </button>
+
+                  <label class="btn btn-outline file-btn">
+                    ⬆️ Khôi phục từ file (.json)
+                    <input type="file" id="inputImportJSON" accept=".json,application/json" hidden />
+                  </label>
+
+                  <label class="btn btn-outline file-btn">
+                    📥 Nhập giao dịch (.csv)
+                    <input type="file" id="inputImportCSV" accept=".csv,text/csv" hidden />
+                  </label>
+                </div>
+              </article>
+
+              <article class="card">
+                <div class="card-head">
+                  <h3>🔄 Dữ liệu mẫu &amp; Đặt lại</h3>
+                </div>
+                <p class="muted-text">
+                  Bạn có thể nạp lại dữ liệu mẫu để thử nghiệm biểu đồ hoặc xóa sạch giao dịch để bắt đầu ghi chép thực tế.
+                </p>
+                <div class="reset-actions">
+                  <button type="button" id="btnLoadDemo" class="btn btn-ghost">✨ Nạp dữ liệu mẫu</button>
+                  <button type="button" id="btnClearTransactions" class="btn btn-danger-outline">🗑️ Xóa sạch giao dịch (Bắt đầu mới)</button>
+                  <button type="button" id="btnFactoryReset" class="btn btn-ghost text-expense">Khôi phục gốc ban đầu</button>
+                </div>
+              </article>
+
+              <article class="card github-promo-card">
+                <div class="card-head">
+                  <h3>🌐 Sẵn sàng Public lên GitHub Pages</h3>
+                </div>
+                <p class="muted-text">
+                  Ứng dụng được thiết kế chuẩn Web Tĩnh (Pure HTML/CSS/JS) kèm file <code>.nojekyll</code> và <code>js/config.js</code> rõ ràng. Bạn có thể kéo-thả lên GitHub và nhận ngay đường link web miễn phí!
+                </p>
+                <button type="button" id="btnOpenGithubGuide2" class="btn btn-primary">
+                  Xem hướng dẫn từng bước đưa lên GitHub →
+                </button>
+              </article>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 1: THÊM / SỬA GIAO DỊCH
+       ======================================================================= -->
+  <dialog id="modalTransaction" class="app-dialog">
+    <form id="formTransaction" method="dialog" class="dialog-box">
+      <div class="dialog-header">
+        <h3 id="modalTxTitle">Thêm giao dịch mới</h3>
+        <button type="button" class="btn-close" data-close-dialog="modalTransaction" aria-label="Đóng">✕</button>
+      </div>
+
+      <div class="dialog-body">
+        <input type="hidden" id="txId" />
+
+        <div class="segmented-control seg-full" id="txModalTypeSwitch">
+          <button type="button" class="seg-btn is-active" data-tx-type="expense">↘ Chi tiêu</button>
+          <button type="button" class="seg-btn" data-tx-type="income">↗ Thu nhập</button>
+          <button type="button" class="seg-btn" data-tx-type="transfer">⇄ Chuyển ví</button>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-field">
+            <label for="txAmount">Số tiền <span class="req">*</span></label>
+            <input type="number" id="txAmount" min="0.01" step="any" placeholder="Nhập số tiền..." required />
+            <div id="txAmountPreview" class="amount-preview">0 ₫</div>
+          </div>
+
+          <div class="form-field">
+            <label for="txDate">Ngày giao dịch <span class="req">*</span></label>
+            <input type="date" id="txDate" required />
+          </div>
+        </div>
+
+        <!-- Gợi ý nhập nhanh mệnh giá -->
+        <div id="quickAmountChips" class="quick-chips"></div>
+
+        <div class="form-row-2">
+          <div class="form-field">
+            <label for="txWallet" id="txWalletLabel">Ví thanh toán <span class="req">*</span></label>
+            <select id="txWallet" required></select>
+          </div>
+
+          <div class="form-field" id="txCategoryField">
+            <label for="txCategory">Danh mục <span class="req">*</span></label>
+            <select id="txCategory"></select>
+          </div>
+
+          <div class="form-field" id="txToWalletField" hidden>
+            <label for="txToWallet">Chuyển đến ví <span class="req">*</span></label>
+            <select id="txToWallet"></select>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="txNote">Ghi chú / Nội dung</label>
+          <input type="text" id="txNote" maxlength="140" placeholder="VD: Ăn trưa văn phòng, Tiền điện tháng này..." />
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button type="button" class="btn btn-ghost" data-close-dialog="modalTransaction">Hủy</button>
+        <button type="submit" class="btn btn-primary" id="btnSubmitTx">Lưu giao dịch</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- =======================================================================
+       MODAL 2: THÊM / SỬA VÍ TIỀN
+       ======================================================================= -->
+  <dialog id="modalWallet" class="app-dialog">
+    <form id="formWallet" method="dialog" class="dialog-box">
+      <div class="dialog-header">
+        <h3 id="modalWalletTitle">Thêm ví mới</h3>
+        <button type="button" class="btn-close" data-close-dialog="modalWallet" aria-label="Đóng">✕</button>
+      </div>
+
+      <div class="dialog-body">
+        <input type="hidden" id="walletEditId" />
+
+        <div class="form-field">
+          <label for="walletName">Tên ví / Tài khoản <span class="req">*</span></label>
+          <input type="text" id="walletName" maxlength="45" placeholder="VD: Vietcombank, Ví MoMo, Tiền mặt..." required />
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-field">
+            <label for="walletType">Loại tài khoản</label>
+            <select id="walletType">
+              <option value="cash">Tiền mặt</option>
+              <option value="bank">Tài khoản Ngân hàng</option>
+              <option value="ewallet">Ví điện tử</option>
+              <option value="saving">Sổ tiết kiệm / Đầu tư</option>
+              <option value="credit">Thẻ tín dụng</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="walletInitialBalance">Số dư ban đầu</label>
+            <input type="number" id="walletInitialBalance" step="any" value="0" required />
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-field">
+            <label for="walletIcon">Biểu tượng (Emoji)</label>
+            <input type="text" id="walletIcon" maxlength="4" value="👛" />
+          </div>
+
+          <div class="form-field">
+            <label for="walletColor">Màu nhận diện</label>
+            <input type="color" id="walletColor" value="#3b82f6" class="color-input" />
+          </div>
+        </div>
+
+        <div class="emoji-picker-grid" data-target-input="walletIcon"></div>
+      </div>
+
+      <div class="dialog-footer">
+        <button type="button" class="btn btn-ghost" data-close-dialog="modalWallet">Hủy</button>
+        <button type="submit" class="btn btn-primary">Lưu ví</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- =======================================================================
+       MODAL 3: THÊM / SỬA DANH MỤC & HẠN MỨC NGÂN SÁCH
+       ======================================================================= -->
+  <dialog id="modalCategory" class="app-dialog">
+    <form id="formCategory" method="dialog" class="dialog-box">
+      <div class="dialog-header">
+        <h3 id="modalCategoryTitle">Thêm danh mục</h3>
+        <button type="button" class="btn-close" data-close-dialog="modalCategory" aria-label="Đóng">✕</button>
+      </div>
+
+      <div class="dialog-body">
+        <input type="hidden" id="catEditId" />
+
+        <div class="form-row-2">
+          <div class="form-field">
+            <label for="catName">Tên danh mục <span class="req">*</span></label>
+            <input type="text" id="catName" maxlength="40" placeholder="VD: Ăn sáng, Xăng xe, Lương..." required />
+          </div>
+
+          <div class="form-field">
+            <label for="catType">Nhóm danh mục</label>
+            <select id="catType">
+              <option value="expense">Chi tiêu</option>
+              <option value="income">Thu nhập</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-field" id="catBudgetField">
+          <label for="catBudget">Hạn mức ngân sách hàng tháng (để 0 nếu không giới hạn)</label>
+          <input type="number" id="catBudget" min="0" step="any" value="0" />
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-field">
+            <label for="catIcon">Biểu tượng (Emoji)</label>
+            <input type="text" id="catIcon" maxlength="4" value="🍜" />
+          </div>
+
+          <div class="form-field">
+            <label for="catColor">Màu hiển thị trên biểu đồ</label>
+            <input type="color" id="catColor" value="#6366f1" class="color-input" />
+          </div>
+        </div>
+
+        <div class="emoji-picker-grid" data-target-input="catIcon"></div>
+      </div>
+
+      <div class="dialog-footer">
+        <button type="button" class="btn btn-ghost" data-close-dialog="modalCategory">Hủy</button>
+        <button type="submit" class="btn btn-primary">Lưu danh mục</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- =======================================================================
+       MODAL 4: HƯỚNG DẪN ĐƯA LÊN GITHUB & CHỈNH SỬA MÃ NGUỒN
+       ======================================================================= -->
+  <dialog id="modalGithubGuide" class="app-dialog dialog-wide">
+    <div class="dialog-box">
+      <div class="dialog-header">
+        <h3>🚀 Hướng dẫn Chỉnh sửa &amp; Public lên GitHub Pages</h3>
+        <button type="button" class="btn-close" data-close-dialog="modalGithubGuide" aria-label="Đóng">✕</button>
+      </div>
+
+      <div class="dialog-body guide-content">
+        <div class="guide-step">
+          <h4>Cách 1: Kéo-thả trực tiếp trên Web GitHub (Nhanh nhất — Không cần cài Git)</h4>
+          <ol>
+            <li>Đăng nhập vào <a href="https://github.com/new" target="_blank" rel="noopener noreferrer">github.com/new</a> để tạo Repository mới (ví dụ đặt tên: <code>quan-ly-tai-chinh</code>, chọn chế độ <strong>Public</strong>, rồi bấm <strong>Create repository</strong>).</li>
+            <li>Ở trang vừa tạo, nhấn vào dòng chữ <strong>uploading an existing file</strong>.</li>
+            <li>Mở thư mục dự án trên máy tính, kéo toàn bộ các file và thư mục bên trong (gồm <code>index.html</code>, <code>README.md</code>, <code>.nojekyll</code>, thư mục <code>css</code> và <code>js</code>) thả vào khung trình duyệt.</li>
+            <li>Nhấn nút xanh <strong>Commit changes</strong> ở cuối trang.</li>
+            <li>Vào mục <strong>Settings</strong> (Cài đặt của Repo) → chọn <strong>Pages</strong> ở menu bên trái → tại mục <em>Branch</em> chọn <strong>main</strong> (và <code>/(root)</code>) → bấm <strong>Save</strong>.</li>
+            <li>Đợi khoảng 1 phút, GitHub sẽ cấp cho bạn địa chỉ web công khai dạng: <code>https://&lt;ten-tai-khoan&gt;.github.io/quan-ly-tai-chinh/</code>!</li>
+          </ol>
+        </div>
+
+        <div class="guide-step">
+          <h4>Cách 2: Tự chỉnh sửa code cực dễ ngay trên GitHub hoặc máy tính</h4>
+          <ul>
+            <li><strong>Chỉnh cấu hình mặc định:</strong> Mở file <code>js/config.js</code> (có thể bấm biểu tượng cây bút ✏️ ngay trên web GitHub) để sửa tên app mặc định, danh mục mặc định, đơn vị tiền tệ hoặc màu sắc.</li>
+            <li><strong>Chỉnh giao diện &amp; bố cục:</strong> Sửa trong <code>css/styles.css</code> (đã chia sẵn các biến màu CSS rõ ràng ở đầu file) và <code>index.html</code>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button type="button" class="btn btn-primary" data-close-dialog="modalGithubGuide">Đã hiểu</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Vùng hiển thị thông báo nhanh (Toast) -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Các file JavaScript tách biệt rõ ràng, chạy trực tiếp được cả trên file:// lẫn GitHub Pages -->
+  <script defer src="./js/config.js"></script>
+  <script defer src="./js/store.js"></script>
+  <script defer src="./js/charts.js"></script>
+  <script defer src="./js/app.js"></script>
+</body>
+</html>
